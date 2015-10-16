@@ -1,0 +1,239 @@
+\documentclass[a4paper,10pt,conference,compsocconf,final]{IEEEtran}
+
+\usepackage[hyphens]{url}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage[utf8]{inputenc}
+\usepackage[stretch=10]{microtype} 
+\usepackage{graphicx}
+\usepackage{booktabs} 
+\usepackage[mathscr]{eucal}
+\usepackage{mathtools}
+\usepackage{enumerate}
+\usepackage{xspace}
+\usepackage{shortvrb}
+\usepackage{mdwmath} 
+\usepackage{verbatim}
+\usepackage{multirow}
+\usepackage[square,comma,numbers,sort]{natbib}
+\usepackage{times}
+\renewcommand{\ttdefault}{cmtt}
+
+\usepackage[tight,footnotesize]{subfigure}
+\newcommand\method[1]{{\sf\small{#1}}}
+\newcommand{\opstyle}[1]{\mbox{\textsc{#1}}}
+\newcommand{\var}[1]{\mbox{\emph{#1}}}
+\def\D{\hphantom{1}}
+\def\C{\hphantom{1,}}
+%-- Sizes 
+\newcommand\kb[1]{$#1$\,kB}
+\newcommand\mb[1]{$#1$\,MB} 
+\newcommand\gb[1]{$#1$\,GB}
+\newcommand\tb[1]{$#1$\,TB} 
+%--- Latex hyphenation sucks, make it go away.
+\hyphenpenalty=5000
+\tolerance=1000
+
+\newcommand{\myparagraph}[1]{\vspace*{1ex}\noindent{\textbf{#1.}}~}
+\newcommand{\shane}[1]{\textrm{\textcolor{orange}{Shane says: #1}}}
+
+\begin{document} % 
+
+% paper title % can use linebreaks \\ within to get better formatting as desired 
+\title{RMIT at the TREC 2015 LiveQA Track}
+\author{ 
+\IEEEauthorblockN{Ruey-Cheng Chen\IEEEauthorrefmark{1},
+J. Shane Culpepper\IEEEauthorrefmark{1},
+Tadele Tadela Damessie\IEEEauthorrefmark{1},
+Timothy Jones\IEEEauthorrefmark{1},\\
+Ahmed Mourad\IEEEauthorrefmark{1},
+Kevin Ong\IEEEauthorrefmark{1},
+Falk Scholer\IEEEauthorrefmark{1},
+Evi Yulanti\IEEEauthorrefmark{1}}
+\IEEEauthorblockA{\IEEEauthorrefmark{1}RMIT University\\
+School of CS\&IT\\ 
+{\{1, 2, 3, 4, 5, 6, 7, 8\}@rmit.edu.au}}
+}
+
+\maketitle
+
+\begin{abstract} 
+This paper describes the four systems RMIT fielded fo 
+the \opstyle{TREC} 2015 LiveQA task.
+\end{abstract}
+
+\begin{IEEEkeywords} 
+XXX; YYY
+\end{IEEEkeywords}
+
+\section{Overview}
+\label{overview}
+In the TREC LiveQA 2015 challenge, we experimented with four
+different retrieval-based answer-finding strategies.
+Instead of pursuing a traditional question-answering approach that
+seeks deeper understanding to the questions, we focused on simple
+enhancements, such as summarization, query trimming, and headword
+expansion.
+These are common techniques used in IR, and can relatively easily be
+integrated into a research-purpose retrieval engines or pipelines of
+a similar scale.
+In our experiment, we considered the following research
+questions:
+
+\myparagraph{RQ 1:}
+{\emph{
+Will shorter or longer summaries result in better answers?
+}}
+
+\myparagraph{RQ 2:}
+{\emph{
+Should all of the terms in a question be used, or should only a 
+subset of ``important'' terms be used?
+}}
+
+\myparagraph{RQ 3:}
+{\emph{
+Can headword expansion using external resources improve the
+quality of answers?
+}}
+
+\bigskip
+
+To answer these questions, we configured four different systems 
+in the 2015 challenge.
+Surprisingly, we found that passage retrieval using the full query
+plus minimal summarization without query reduction or expansion
+produced the best result in general.
+
+\section{Data and Retrieval Settings}
+We now describe the collection and retrieval setting used in our
+system.
+
+\subsection{Collection}
+
+\begin{table*}[!t]
+\centering
+\caption{Summary of collections indexed to answer questions.\label{tbl:col}}
+\begin{tabular}{p{35mm}ccp{50mm}}
+\toprule
+{\bf Collection} & {\bf Number of Documents} & {\bf Number of Words} & {\bf Description} \\
+\midrule
+AQUAINT & $\D1{,}034$K & $\C506$M & Newswire, 1999 - 2000 \\
+AQUAINT2 & $\D\C907$K & $\C410$M & Newswire, Oct 2004 - Mar 2006 \\
+Wikipedia-EN & $\D4{,}847$K & $1{,}775$M & Online Knowledge Base\footnote{We used an enwiki dump produced on May 15, 2015 to create the document collection.} \\
+Yahoo! Answers CQA v1.0 & $31{,}972$K & $1{,}462$M & Question answers converted to documents from the Yahoo! Answers website.
+\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Figure~{\ref{tbl:col}} summarizes the collections we used in the task.
+We indexed AQUAINT and AQUAINT-2 as they were.
+To prepare the data set for English Wikipedia, we used the
+open-source tool {\method{wp-download}}
+\footnote{https://github.com/babilen/wp-download},
+to fetch a dump, extracted all of the XML content using 
+{\method{wikiextractor}}
+\footnote{ https://github.com/attardi/wikiextractor}, 
+and indexed every wikipedia page as a document.
+To index the Yahoo!  Answers CQA data, we processed the collection as 
+follows: rather than just indexing the best answers, we extracted and
+indexed only the answers to previous questions and stored them as
+documents.
+We did not make use of the subject and content tags (i.e., question
+title and description) in the data.
+We used Indri 5.9 as our retrieval engine with Krovetz stemming and
+the default InQuery stoplist.
+We ended up with a single index of \gb{39} in file size that
+contained $38.7$ million documents and $12.2$ million unique terms.
+
+For performance reasons, and the length of some of the queries,
+we ran a bag-of-words query, and BM25 ranking.
+For BM25, 
+our parameter configuration was $k_1=0.9$ and $b=0.4$.
+\footnote{The values for $b$ and $k_1$ are different
+than the defaults reported by {\citet{rwj+94-trec}}.
+These parameter choices were reported for Atire and Lucene
+in the 2015 IR-Reproducibility Challenge, see
+{\url{github.com/lintool/IR-Reproducibility}} for further
+details.}
+
+\subsection{Summarization}
+\label{sec:sum}
+
+TBA
+
+\subsection{Headword Detection}
+\label{sec:head}
+
+TBA
+
+\subsection{Query Trimming and Expansion}
+\label{sec:redexp}
+
+TBA
+
+\subsection{Run descriptions}
+
+\noindent\textbf{RMIT0 (automatic): }
+Indri bag-of-words query for all terms in the query, and the default
+document summarizer as described in Section~{\ref{sec:sum}.
+
+\medskip
+
+\noindent\textbf{RMIT1 (automatic): }
+Indri bag-of-words query for all terms in the query, and the default
+document summarizer as described in Section~{\ref{sec:sum}.
+However, only the first sentence generated by the summary process
+was returned.
+
+\medskip
+
+\noindent\textbf{RMIT2 (automatic): }
+Indri bag-of-words query for all terms in the query, and the default
+document summarizer as described in Section~{\ref{sec:sum}.
+Query expansion was done using \method{word2vec}.
+
+\medskip
+
+\noindent\textbf{RMIT3 (automatic): }
+Indri bag-of-words query for all terms in the query, and the default
+document summarizer as described in Section~{\ref{sec:sum}.
+Query expansion was done using \method{wordnet}.
+
+\medskip
+
+\subsection{Results}
+
+\begin{table*}[t]
+\centering
+\caption{
+Effectiveness summary for all four RMIT systems when compared to the
+average across all systems participating in the 2015 LiveQA track.
+\label{tab:runs}}
+\begin{tabular}{lcccccccccc}
+\toprule
+\multirow{2}{*}{\bf Run ID} & {\bf Avg. Score} && \multicolumn{4}{c}{\bf Success} && \multicolumn{3}{c}{\bf Precision} \\
+& {\bf (0-3)} && {\bf @1+} & {\bf @2+} & {\bf @3+} & {\bf @4+} && {\bf @2+} & {\bf @3+} & {\bf @4+} \\
+\midrule
+RMIT0 &{\bf 0.663}&&$0.987$&{\bf 0.364}&{\bf 0.220}&{\bf 0.082}&&{\bf 0.369}&{\bf 0.223}&{\bf 0.083}\\
+RMIT1 &$0.435$&&$0.992$&$0.267$&$0.130$&$0.039$&&$0.269$&$0.131$&$0.039$\\
+RMIT2 &$0.378$&&{\bf 0.998}&$0.232$&$0.115$&$0.034$&&$0.232$&$0.115$&$0.034$\\
+RMIT3 &$0.412$&&$0.994$&$0.251$&$0.126$&$0.038$&&$0.252$&$0.127$&$0.038$\\
+&&&&&&&&&\\
+All Runs  &$0.465$&&$0.925$&$0.262$&$0.146$&$0.060$&&$0.284$&$0.159$&$0.065$\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Table~\ref{tab:runs} shows foo.
+
+\section{Conclusion}
+
+We show foo, bar, and bam.
+
+%\bibliographystyle{IEEEtran} 
+\bibliographystyle{plainnat} 
+\bibliography{p}
+
+\end{document}
