@@ -1,5 +1,7 @@
 # Created by https://www.gitignore.io/api/tex
 
+.*.swp
+
 ### TeX ###
 ## Core latex/pdflatex auxiliary files:
 *.aux
