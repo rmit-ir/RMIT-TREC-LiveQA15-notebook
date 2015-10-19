@@ -130,29 +130,32 @@ Yahoo! Answers CQA v1.0 & $31{,}972$K & $1{,}462$M & Question answers converted 
 Figure~{\ref{tbl:col}} summarizes the collections we used in the task.  We
 indexed AQUAINT and AQUAINT-2 as they were.  To prepare the data set for
 English Wikipedia, we used the open-source tool {\method{wp-download}}
-\footnote{https://github.com/babilen/wp-download}, to fetch a dump, extracted
-all of the XML content using {\method{wikiextractor}} \footnote{
-https://github.com/attardi/wikiextractor}, and indexed every wikipedia page as
-a document.  To index the Yahoo!  Answers CQA data, we processed the collection
-as follows: rather than just indexing the best answers, we extracted and
-indexed only the answers to previous questions and stored them as documents.
-We did not make use of the subject and content tags (i.e., question title and
-description) in the data.  We used Indri 5.9 as our retrieval engine with
-Krovetz stemming and the default InQuery
-stoplist.\footnote{http://www.lemurproject.org/indri.php} We ended up with a
+\footnote{\url{https://github.com/babilen/wp-download}}, to fetch a dump, extracted
+all of the XML content using
+{\method{wikiextractor}}\footnote{\url{https://github.com/attardi/wikiextractor}},
+and indexed every wikipedia page as a document.  To index the Yahoo!  Answers
+CQA data, we processed the collection as follows: rather than just indexing the
+best answers, we extracted and indexed only the answers to previous questions
+and stored them as documents.  We did not make use of the subject and content
+tags (i.e., question title and description) in the data.  We used Indri 5.9 as
+our retrieval engine with Krovetz stemming and the default InQuery
+stoplist.\footnote{\url{http://www.lemurproject.org/indri.php}} We ended up with a
 single index of \gb{39} in file size that contained $38.7$ million documents
 and $12.2$ million unique terms.
 
 \subsection{Passage Retrieval}
 \label{sec:passage}
 
-According to our tests over the live stream prior to the challenge, the
-question title is roughly sized 10 terms and the description 30 terms.  We
-therefore used only question title to formulate the initial query.  We used the
-fixed-sized passage operator \texttt{\#combine[passage100:50]( \ldots)}
-provided by Indri to retrieve the top 3 passages, extracted them from document
-texts, and forwarded the result to the summarizer.
+According to our prior tests over the live stream, the question title is on
+average sized 10 terms and the body roughly 30 terms.  As some of the question
+body can be quite long, we decided to form the initial query intent using
+the title only.  In two of our submitted runs, we tried different ways of
+expressing the same query intent by adding/removing terms.  The details are
+given in Section~\ref{sec:runs}.
 
+We used the fixed-sized passage operator \texttt{\#combine[passage100:50](
+\ldots)} provided by Indri to retrieve and parse the top 3 passages from
+document texts.  The result then got sent to the summarizer in the next stage.
 For performance reasons, and the length of some of the queries, we ran a
 bag-of-words query, and BM25 ranking.  For BM25, our parameter configuration
 was $k_1=0.9$ and $b=0.4$.  \footnote{The values for $b$ and $k_1$ are
@@ -166,17 +169,47 @@ details.}
 
 TBA
 
+\vskip10em
+
 \subsection{Headword Detection}
 \label{sec:head}
 
 TBA
 
-\subsection{Query Trimming and Expansion}
+\vskip10em
+
+\subsection{Query Trimming and Headword Expansion}
 \label{sec:redexp}
 
-TBA
+We experimented with a feature called query trimming, which is to use only the
+``important'' terms in the question title to retrieve answers.  As the
+questions from Yahoo! Answers are quite verbose, intended to be more
+comprehensible than effective in retrieval, it makes sense to check if using
+only some part of the query, especially that contributes the most to ranking,
+would result in some improvements in effectiveness.
+
+We used the algorithms in Petri et al.~\cite{petri2013exploring,petri2014score}
+to extract the maxscore $U_b$ for each term.\footnote{The code is available at
+\url{https://www.github.com/jsc/WANDbl}.}  The maxscore is loaded into memory
+whenever a server starts, and in run-time we used it to trim the initial query
+down to some predefined size.  Throughout the experiment, we set this trimming
+size to 5 terms.
+
+We also experimented with two ways of expanding the headword externally, by
+drawning information from resources such as \emph{word2vec} and \emph{wordnet}.  
+
+In the former method, we took a
+pre-trained word embedding model distributed with
+\method{word2vec}\footnote{\url{https://code.google.com/p/word2vec}} and used
+\method{gensim}\footnote{\url{https://radimrehurek.com/gensim}} to populate a
+list of query terms that are most similar to the given input.  
+
+In the latter method, we implemented something \ldots.
+
+\vskip10em
 
 \subsection{Run descriptions}
+\label{sec:runs}
 
 \noindent\textbf{RMIT0\footnote{Originally referred to as Monash-System2 in the LiveQA challenge.} (automatic): }
 Indri bag-of-words query for all terms in the query, and the default
