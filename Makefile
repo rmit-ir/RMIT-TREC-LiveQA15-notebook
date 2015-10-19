@@ -15,3 +15,4 @@ clean:
 	rm -f core *.log *.aux *.bbl *.blg *.dvi *.ps *.lof *.toc
 	rm -f *~ *.lot *.loa *.idx *.ilg *.ind *.nav *.out *.snm *.bak
 
+-include Makefile.def
