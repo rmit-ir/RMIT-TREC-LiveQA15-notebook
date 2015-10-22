@@ -107,7 +107,12 @@ produced the best result in general.
 
 \section{Data and Retrieval Settings}
 We now describe the collection and retrieval setting used in our
-system.
+system. 
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=\textwidth]{TREC-live-QA.png}
+\end{figure*}
 
 \subsection{Collection}
 
@@ -167,10 +172,77 @@ details.}
 \subsection{Summarization}
 \label{sec:sum}
 
-TBA
+% For each web document to summarize, stop words were first removed, and words
+% were then stemmed using the Krovetz stemmer.
+% Summaries were constrained to a length of 50 words, following the settings used by Keikha
+% et al. \cite{keikha2014retrieving} in finding answers by retrieving
+% passages.
+% The related Y!A answers are used to determine the importance of each
+% word in the web document.
+% In our case, important words are those that indicate answers to the
+% given query.
+% To reflect this idea, words in the document which co-occur with answers
+% for a greater number of related Y!A questions are given higher weight.
+% The word weight calculation for a given query is as follows:
 
-\vskip10em
+	% \begin{equation}
+	% w_j=\sum_{k=1}^{n} \frac{TF(e_j, a_k)*IDF(e_j, a_k)}{\ln(1+k)}
+	% \end{equation}
 
+% \noindent where $ w_j $ is the weight of word $ e_j $ in the web
+% document; $ n $ is total number of related Y!A answers for the query
+% (i.e. $n$ is maximum of 10); $ k $ is the position of an answer in the
+% Top $n$ Y!A results; $ TF(e_j,a_k ) $ is the frequency of word $ e_j $
+% in the Y!A answer $ a_k $; and IDF $ e_j $ is inverse document
+% frequency of word $ e_j $ in the web collection. The IDF terms is calculated as:
+
+
+	% \begin{equation}
+	% IDF(e_j)=\ln(1+\frac{n}{df(e_j)})
+	% \end{equation}
+	% 
+% \noindent where $ n $ is the total number of documents in the web
+% collection and $ df(e_j) $ is the frequency of the document in the web
+% collection that contains word $ e_j $. 
+
+We used the model proposed by Takamura and Okumura \cite{takamura2009text} to
+generate extractive summaries from the top-ranked passages.  In this model,
+summarization is characterized as a two-way optimization problem, in which one
+seeks to maximize coverage over important words and minimize redundancies
+simultaneously.  The parameter $\lambda$ controls the level of redundancy.
+\begin{equation}
+\begin{split}
+  \textrm{maximize} \qquad & (1-\lambda) \sum_{j} w_j z_j + \lambda \sum_{i}\sum_{j} x_i w_j a_{ij} \\
+  \textrm{subject to} \qquad & \sum_{i} c_ix_i \le K; \\
+       & \forall j \sum_{i}^{} a_{ij}x_i \ge z_j; \\
+       & \forall i \hspace{0.1cm} x_i \in \{0,1\}; \\
+       & \forall j \hspace{0.1cm} z_j \in \{0,1\}
+\end{split}
+\end{equation}
+	
+	% \begin{displaymath}
+		% s.t.\sum_{i}^{} c_ix_i \le K;\hspace{0.2cm}\forall j \sum_{i}^{} a_{ij}x_i \ge z_j
+	% \end{displaymath}
+
+	% \begin{displaymath}
+	% \forall i \hspace{0.1cm} x_i \in \{0,1\}; \hspace{0.1cm} \forall j \hspace{0.1cm} z_j \in \{0,1\}
+	% \end{displaymath}
+	
+The MCP model is an integer linear programming problem, which assigns binary
+values to the variables (i.e. $z_j$ and $x_i$) so that they can maximize the
+result of the objective function above. In this case, $w_j$ is the weight of
+word $e_j$; $z_j$ denotes word coverage in a summary, which is 1 when word
+$e_j$ is covered and 0 otherwise; $a_{ij}$ denotes word coverage in a sentence,
+which is 1 when sentence $s_i$ contains word $e_j$ and 0 otherwise; $x_i$
+denotes the selection status of sentences, which is 1 when sentence $s_i$ is
+chosen in a summary and 0 otherwise; $c_i$ denotes cost of selecting sentence
+$s_i$, i.e. number of words in $s_i$. The first constraint $\sum_{i}^{} c_ix_i
+\le K$ specifies that the length of summary cannot exceed $K$, which denotes
+the maximum length of the summary in words. The next constraint $\sum_{i}^{}
+a_{ij}x_i \ge z_j$ relates to word coverage in the summary, where word $e_j$ is
+covered when at least one sentence containing this word is selected in the
+summary.
+	
 \subsection{Headword Detection}
 \label{sec:head}
 
@@ -192,17 +264,16 @@ We used the algorithms in Petri et al.~\cite{petri2013exploring,petri2014score}
 to extract the maxscore $U_b$ for each term.\footnote{The code is available at
 \url{https://www.github.com/jsc/WANDbl}.}  The maxscore is loaded into memory
 whenever a server starts, and in run-time we used it to trim the initial query
-down to some predefined size.  Throughout the experiment, we set this trimming
-size to 5 terms.
+down to some predefined size.  The size is set to 5 terms throughout the
+experiments where trimming is applied.
 
 We also experimented with two ways of expanding the headword externally, by
 drawning information from resources such as \emph{word2vec} and \emph{wordnet}.  
 
-In the former method, we took a
-pre-trained word embedding model distributed with
-\method{word2vec}\footnote{\url{https://code.google.com/p/word2vec}} and used
-\method{gensim}\footnote{\url{https://radimrehurek.com/gensim}} to populate a
-list of query terms that are most similar to the given input.  
+In the former method, we took a pre-trained word embedding model distributed
+with \method{word2vec}\footnote{\url{https://code.google.com/p/word2vec}} and
+used \method{gensim}\footnote{\url{https://radimrehurek.com/gensim}} to
+populate a list of query terms that are most similar to the given input.  
 
 In the latter method, we implemented something \ldots.
 
@@ -263,6 +334,8 @@ All Runs  &$0.465$&&$0.925$&$0.262$&$0.146$&$0.060$&&$0.284$&$0.159$&$0.065$\\
 \end{table*}
 
 Table~\ref{tab:runs} shows foo.
+
+\section{Error Analysis}
 
 \section{Conclusion}
 
