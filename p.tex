@@ -111,7 +111,7 @@ system.
 
 \begin{figure*}
   \centering
-  \includegraphics[width=\textwidth]{TREC-live-QA.png}
+  \includegraphics[width=0.95\textwidth]{TREC-live-QA.png}
 \label{fig:arch}
    \caption{System architechture for each RMIT system. Green shading indicates components that are different when compared to RMIT-0.
 }
@@ -165,8 +165,8 @@ the title only.  In two of our submitted runs, we tried different ways of
 expressing the same query intent by adding/removing terms.  The details are
 given in Section~\ref{sec:runs}.
 
-We used the fixed-sized passage operator \texttt{\#combine[passage100:50](
-\ldots)} provided by Indri to retrieve and parse the top 3 passages from
+We used the fixed-sized passage operator \texttt{\#combine[passage100:50](\ldots)} 
+provided by Indri to retrieve and parse the top 3 passages from
 document texts.  The result then got sent to the summarizer in the next stage.
 For performance reasons, and the length of some of the queries, we ran a
 bag-of-words query, and BM25 ranking.  For BM25, our parameter configuration
@@ -179,83 +179,57 @@ details.}
 \subsection{Summarization}
 \label{sec:sum}
 
-% For each web document to summarize, stop words were first removed, and words
-% were then stemmed using the Krovetz stemmer.
-% Summaries were constrained to a length of 50 words, following the settings used by Keikha
-% et al. \cite{keikha2014retrieving} in finding answers by retrieving
-% passages.
-% The related Y!A answers are used to determine the importance of each
-% word in the web document.
-% In our case, important words are those that indicate answers to the
-% given query.
-% To reflect this idea, words in the document which co-occur with answers
-% for a greater number of related Y!A questions are given higher weight.
-% The word weight calculation for a given query is as follows:
-
-	% \begin{equation}
-	% w_j=\sum_{k=1}^{n} \frac{TF(e_j, a_k)*IDF(e_j, a_k)}{\ln(1+k)}
-	% \end{equation}
-
-% \noindent where $ w_j $ is the weight of word $ e_j $ in the web
-% document; $ n $ is total number of related Y!A answers for the query
-% (i.e. $n$ is maximum of 10); $ k $ is the position of an answer in the
-% Top $n$ Y!A results; $ TF(e_j,a_k ) $ is the frequency of word $ e_j $
-% in the Y!A answer $ a_k $; and IDF $ e_j $ is inverse document
-% frequency of word $ e_j $ in the web collection. The IDF terms is calculated as:
-
-
-	% \begin{equation}
-	% IDF(e_j)=\ln(1+\frac{n}{df(e_j)})
-	% \end{equation}
-	% 
-% \noindent where $ n $ is the total number of documents in the web
-% collection and $ df(e_j) $ is the frequency of the document in the web
-% collection that contains word $ e_j $. 
-
 We used the model proposed by Takamura and Okumura \cite{takamura2009text} to
 generate extractive summaries from the top-ranked passages.  In this model,
 summarization is characterized as a two-way optimization problem, in which one
 seeks to maximize coverage over important words and minimize redundancies
-simultaneously.  The parameter $\lambda$ controls the level of redundancy.
+simultaneously.  The mathematical formulation is given as follows:
 \begin{equation}
 \begin{split}
   \textrm{maximize} \qquad & (1-\lambda) \sum_{j} w_j z_j + \lambda \sum_{i}\sum_{j} x_i w_j a_{ij} \\
-  \textrm{subject to} \qquad & \sum_{i} c_ix_i \le K; \\
-       & \forall j \sum_{i}^{} a_{ij}x_i \ge z_j; \\
-       & \forall i \hspace{0.1cm} x_i \in \{0,1\}; \\
-       & \forall j \hspace{0.1cm} z_j \in \{0,1\}
+  \textrm{subject to} \qquad 
+  & x_i \in \{0,1\}, z_j \in \{0,1\} \textrm{for all $i, j$}; \\
+       & \sum_{i} c_ix_i \le K; \\
+       & \sum_{i}^{} a_{ij}x_i \ge z_j \textrm{for all $j$} 
 \end{split}
 \end{equation}
-	
-	% \begin{displaymath}
-		% s.t.\sum_{i}^{} c_ix_i \le K;\hspace{0.2cm}\forall j \sum_{i}^{} a_{ij}x_i \ge z_j
-	% \end{displaymath}
 
-	% \begin{displaymath}
-	% \forall i \hspace{0.1cm} x_i \in \{0,1\}; \hspace{0.1cm} \forall j \hspace{0.1cm} z_j \in \{0,1\}
-	% \end{displaymath}
-	
-The MCP model is an integer linear programming problem, which assigns binary
-values to the variables (i.e. $z_j$ and $x_i$) so that they can maximize the
-result of the objective function above. In this case, $w_j$ is the weight of
-word $e_j$; $z_j$ denotes word coverage in a summary, which is 1 when word
-$e_j$ is covered and 0 otherwise; $a_{ij}$ denotes word coverage in a sentence,
-which is 1 when sentence $s_i$ contains word $e_j$ and 0 otherwise; $x_i$
-denotes the selection status of sentences, which is 1 when sentence $s_i$ is
-chosen in a summary and 0 otherwise; $c_i$ denotes cost of selecting sentence
-$s_i$, i.e. number of words in $s_i$. The first constraint $\sum_{i}^{} c_ix_i
-\le K$ specifies that the length of summary cannot exceed $K$, which denotes
-the maximum length of the summary in words. The next constraint $\sum_{i}^{}
-a_{ij}x_i \ge z_j$ relates to word coverage in the summary, where word $e_j$ is
-covered when at least one sentence containing this word is selected in the
-summary.
+To produce an extractive summary, one basically makes a choice over the set of
+sentences and decides what to include.  By doing so, one also makes an implicit
+choice over words.  This choice is modeled in the optimization problemd as two
+sets of variables $x_i$ and $z_j$, the former indicating the binary decision on
+keeping sentence $i$ and the latter that on keeping word $j$ in the summary.
+In other words, for each sentence $i$, $x_i$ is set to 1 if sentence $i$ is to
+be included in the summary or 0 otherwise.  Analogously for each term $j$,
+$z_j$ is set to 1 if term $j$ is to be included.
+
+In this problem, $c_i$ denotes cost of selecting sentence $s_i$ (i.e. number of
+words in $s_i$), and $w_j$ denotes the weight of word $j$.  We used a tf-idf
+weighting scheme in which term frequecy ($tf$) is pulled from question title
+and body, and inverse document-freqency ($idf$) learned from a background
+corpus.  Term frequency collected from question body is further penalized with
+a factor $\alpha < 1$ as the information given in question body can be less
+precise than in title.
+\begin{equation}
+  w_j = \left[ tf_{title}(j) + \alpha ~ tf_{body}(j) \right] * idf(j)
+\end{equation}
+
+The correspondence between sentence $i$ and word $j$ is coded in the indicator
+variable $a_{ij}$, whose value is set to 1 if word $j$ appears in sentence $i$
+and 0 otherwise.  With the first constraint, we limit the size of summary to
+$K$ words at most.  With the second constraint, the word coverage is related to
+the sentence coverage, thus completing the formulation.
+
+Empirically, we fine-tune parameters $\lambda$ and $\alpha$ based on the prior
+runs.  In the challenge, we set $\lambda = 0.1$ and $\alpha = 0.43$.  We use
+IBM CPLEX solver to compute the optimal alloation.
 	
 \subsection{Headword Detection}
 \label{sec:head}
 
 TBA
 
-\vskip10em
+\vskip7em
 
 \subsection{Query Trimming and Headword Expansion}
 \label{sec:redexp}
@@ -284,7 +258,7 @@ populate a list of query terms that are most similar to the given input.
 
 In the latter method, we implemented something \ldots.
 
-\vskip10em
+\vskip7em
 
 \subsection{Server architechture}
 
