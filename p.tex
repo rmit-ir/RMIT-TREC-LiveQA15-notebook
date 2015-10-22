@@ -112,6 +112,9 @@ system.
 \begin{figure*}
   \centering
   \includegraphics[width=\textwidth]{TREC-live-QA.png}
+\label{fig:arch}
+   \caption{System architechture for each RMIT system. Green shading indicates components that are different when compared to RMIT-0.
+}
 \end{figure*}
 
 \subsection{Collection}
@@ -142,9 +145,13 @@ and indexed every wikipedia page as a document.  To index the Yahoo!  Answers
 CQA data, we processed the collection as follows: rather than just indexing the
 best answers, we extracted and indexed only the answers to previous questions
 and stored them as documents.  We did not make use of the subject and content
-tags (i.e., question title and description) in the data.  We used Indri 5.9 as
+tags (i.e., question title and description) in the data.  
+
+\subsection{Indexing}
+We used Indri 5.9 as
 our retrieval engine with Krovetz stemming and the default InQuery
-stoplist.\footnote{\url{http://www.lemurproject.org/indri.php}} We ended up with a
+stoplist.\footnote{\url{http://www.lemurproject.org/indri.php}} Indexing the
+collection described in the previous section, we ended up with a
 single index of \gb{39} in file size that contained $38.7$ million documents
 and $12.2$ million unique terms.
 
@@ -279,6 +286,14 @@ In the latter method, we implemented something \ldots.
 
 \vskip10em
 
+\subsection{Server architechture}
+
+We connected the various services described above together using a server
+witten in Go. It included graceful handling of timeouts, allowing us to ensure
+a response within the 60 second window. For the curious reader, our code is
+available\footnote{\url{https://github.com/TimothyJones/trec-liveqa-server}}
+under a BSD license. Please cite this paper if you use the code for anything.
+
 \subsection{Run descriptions}
 \label{sec:runs}
 
@@ -299,14 +314,14 @@ was returned.
 \noindent\textbf{RMIT2 (automatic): }
 Indri bag-of-words query for all terms in the query, and the default
 document summarizer as described in Section~{\ref{sec:sum}.
-Query expansion was done using \method{word2vec}.
+Query expansion was done using \method{word2vec}, and the original query terms were trimmed.
 
 \medskip
 
 \noindent\textbf{RMIT3 (automatic): }
 Indri bag-of-words query for all terms in the query, and the default
 document summarizer as described in Section~{\ref{sec:sum}.
-Query expansion was done using \method{wordnet}.
+Query expansion was done using \method{wordnet}, and the original query words were trimmed.
 
 \medskip
 
