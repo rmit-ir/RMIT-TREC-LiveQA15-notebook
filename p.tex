@@ -38,6 +38,9 @@
 \newcommand{\shane}[1]{\textrm{\textcolor{orange}{Shane says: #1}}}
 \newcommand{\ko}[1]{\textrm{\textcolor{red}{Kevin says: #1\\}}}
 
+\usepackage{todonotes}
+\newcommand{\am}{\todo[author=AM, color=red!20!white,inline]}
+
 \begin{document} % 
 
 % paper title % can use linebreaks \\ within to get better formatting as desired 
@@ -304,7 +307,7 @@ with \method{word2vec}\footnote{\url{https://code.google.com/p/word2vec}} and
 used \method{gensim}\footnote{\url{https://radimrehurek.com/gensim}} to
 populate a list of query terms that are most similar to the given input.  
 
-In the latter method, we implemented something \ldots.
+In the latter method, we implemented the models proposed by \cite{huang2008question, silva2011symbolic}. First we extract the head word which is supposed to be the most important term in the question in terms of helping to retrieve only relevant documents. Second, we extract its hypernyms using WordNet. Finally, we use the context of the question, excluding the head word, to resolve the semantic ambiguity of different senses and populate a list of synonyms. For example, considering the question \textit{What are the sales goals daily and monthly at MAC Cosmetics?}, the head word is `sales' and its hypernyms given the context are `gross sales', `income', `financial gain', and `gain sum'.
 
 \vskip7em
 
