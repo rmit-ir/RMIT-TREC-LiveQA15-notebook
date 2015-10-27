@@ -69,7 +69,7 @@ School of CS\&IT\\
 \begin{abstract} This paper describes the four systems RMIT fielded
 for the {\opstyle{TREC}} 2015 LiveQA task and the associated
 experiments.
-The challenge results show that the base run RMIT0 has achieved an
+The challenge results show that the base run RMIT-0 has achieved an
 above-average performance, but other attempted improvements have all
 resulted in decreased retrieval effectiveness.
 \end{abstract}
@@ -126,7 +126,7 @@ system.
   \label{fig:arch}
   \caption{System architecture for each RMIT system.
   Green shading indicates components that are different when compared
-  to RMIT0.}
+  to RMIT-0.}
   \end{figure*}
 
 \subsection{Server architecture}
@@ -168,7 +168,7 @@ Please cite this paper if you use the code for anything.
 \subsection{Run descriptions}
 \label{sec:runs}
 
-\noindent\textbf{RMIT0\footnote{Originally referred to as
+\noindent\textbf{RMIT-0\footnote{Originally referred to as
 Monash-System2 in the LiveQA challenge.}
 (automatic): } Indri bag-of-words passage retrieval using all of the
 terms in the question title, and top three passages summarized by the method
@@ -176,7 +176,7 @@ described in Section~{\ref{sec:sum}.
 
 \medskip
 
-\noindent\textbf{RMIT1 (automatic): } Indri bag-of-words passage
+\noindent\textbf{RMIT-1 (automatic): } Indri bag-of-words passage
 retrieval using all of the terms in the question title, and the
 top three passages summarized by the method described in
 Section~{\ref{sec:sum}.
@@ -185,7 +185,7 @@ returned.
 
 \medskip
 
-\noindent\textbf{RMIT2 (automatic): } Indri bag-of-words passage
+\noindent\textbf{RMIT-2 (automatic): } Indri bag-of-words passage
 retrieval using terms derived from the question title, term trimming,
 headword expansion using {\method{word2vec}} as described in
 Section~{\ref{sec:redexp}}, and the top three passages summarized by
@@ -195,7 +195,7 @@ returned.
 
 \medskip
 
-\noindent\textbf{RMIT3 (automatic): } Indri bag-of-words passage
+\noindent\textbf{RMIT-3 (automatic): } Indri bag-of-words passage
 retrieval using terms derived from the question title, term trimming,
 headword expansion using \method{wordnet} as described in 
 Section~{\ref{sec:redexp}}, and top three passages summarized by the F
@@ -333,7 +333,19 @@ We used the IBM CPLEX solver to compute the optimal allocation.
 \subsection{Headword Detection}
 \label{sec:head}
 
-\vskip7em
+Head word is supposed to be the most important term in the question in terms of
+helping to retrieve only relevant documents. For example, considering the
+question \textit{What are the sales goals daily and monthly at MAC Cosmetics?},
+the head word is `sales' and its hypernyms given the context are `gross sales',
+`income', `financial gain', and `gain sum'. The process of generating the
+hypernyms is divided into two stages stated below.
+
+To extract the head word, we generate the syntactic parse tree of the question
+using Stanford parser. Then we apply the rule-based model initially defined by
+Collins \cite{collins2003head} and lately modified/refined by Huang et al.
+\cite{huang2008question} followed by Silva et al. \cite{silva2011symbolic}.
+
+
 
 \subsection{Query Trimming and Headword Expansion}
 \label{sec:redexp}
@@ -362,44 +374,50 @@ is applied.
 We also experimented with two ways of expanding the headword term in
 each query externally, by drawing information from resources such as
 \method{word2vec} and \method{wordnet}:
+
 \begin{itemize}
-  \item \method{word2vec}:  In this method, we took a pre-trained word
+  \item \method{word2vec}:  
+    In this method, we took a pre-trained word
     embedding model distributed with
     \method{word2vec}\footnote{\url{https://code.google.com/p/word2vec}} and
     used \method{gensim}\footnote{\url{https://radimrehurek.com/gensim}} to
     populate a list of query terms that are most similar to a given input.  
 
-  \item \method{wordnet}: In this method, we implemented the models
-  proposed by \cite{huang2008question, silva2011symbolic}.
-  First we extract the headword which is believed to be the most
-  important term in the question.
-  Second, we extract the hypernyms for the headword using WordNet.
-  Finally, we use the context of the question, excluding the
-  headword, to resolve the semantic ambiguity of different senses and
-  populate a list of synonyms.
-  For example, consider the question \textit{What are the sales
-  goals daily and monthly at MAC Cosmetics?}, the headword is
-  {\tt sales} and the hypernyms are {\tt gross sales}, {\tt income},
-  {\tt financial gain}, and {\tt gain sum}.
-  \end{itemize}
+  \item \method{wordnet}: In this method, we implemented the models proposed by
+    \cite{huang2008question, silva2011symbolic}.  We extract the hypernyms of
+    the head word using WordNet, and map the Penn Treebank POS Tags to WordNet
+    tags to decide which part of speech senses should be considered.  Then
+    following Huang's et al.  \cite{huang2008question} algorithm for head word
+    sense disambiguation, we calculate terms overlap between the definition of
+    each sense and the definition of context words (each word in the question
+    excluding the head word) with maximum depth of six. Optimal sense, the one
+    which results in the maximum common words, is chosen to populate the list
+    of synonyms.  
+\end{itemize}
 
-We took the top five generated expansion terms and added them back into
-the query without any modification.
-Note that when query trimming is applied, the query would first get
-trimmed and then expanded using the headword.
+Note that in the latter method, we use the context of the question, excluding
+the headword, to resolve the semantic ambiguity of different senses and
+populate a list of synonyms.  For example, consider the question \textit{What
+are the sales goals daily and monthly at MAC Cosmetics?}, the headword is
+{\tt sales} and the hypernyms are {\tt gross sales}, {\tt income}, {\tt
+financial gain}, and {\tt gain sum}.
 
-\subsection{Results}
+For either approach, we added the top five generated expansion terms back into
+the query without any modification.  Note that when query trimming is applied,
+the query would first get trimmed and then expanded using the headword.
+
+\section{Results}
 
 The LiveQA challenge result is given in Table~\ref{tab:runs}, where
 our submitted runs and the average result across all runs are
 shown.
-Our base run RMIT0 delivered the best performance in our experiment,
+Our base run RMIT-0 delivered the best performance in our experiment,
 achieving $0.663$ {in} Avg Score.
 While the base run appears to outperform the average across all runs
 submitted to the challenge, other improvements we made all resulted in
 decreased performance.
 
-Limiting the output to only the first sentence in the summary (RMIT1)
+Limiting the output to only the first sentence in the summary (RMIT-1)
 appears to have a negative effect on precision at all relevance
 level.
 This is a little surprising since adding more sentences increases the
