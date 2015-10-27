@@ -308,7 +308,11 @@ with \method{word2vec}\footnote{\url{https://code.google.com/p/word2vec}} and
 used \method{gensim}\footnote{\url{https://radimrehurek.com/gensim}} to
 populate a list of query terms that are most similar to the given input.  
 
-In the latter method, we implemented the models proposed by \cite{huang2008question, silva2011symbolic}. First we extract the head word which is supposed to be the most important term in the question in terms of helping to retrieve only relevant documents. Second, we extract its hypernyms using WordNet. Finally, we use the context of the question, excluding the head word, to resolve the semantic ambiguity of different senses and populate a list of synonyms. For example, considering the question \textit{What are the sales goals daily and monthly at MAC Cosmetics?}, the head word is `sales' and its hypernyms given the context are `gross sales', `income', `financial gain', and `gain sum'.
+In the latter method, we implemented the models proposed by \cite{huang2008question, silva2011symbolic}. Instead of using the head word and its direct hypernyms as features for question classification, we use the hypernyms only for query expansion. Head word is supposed to be the most important term in the question in terms of helping to retrieve only relevant documents. For example, considering the question \textit{What are the sales goals daily and monthly at MAC Cosmetics?}, the head word is `sales' and its hypernyms given the context are `gross sales', `income', `financial gain', and `gain sum'. The process of generating the hypernyms is divided into two stages stated below.
+
+To extract the head word, we generate the syntactic parse tree of the question using Stanford parser. Then we apply the rule-based model initially defined by Collins \cite{collins2003head} and lately modified/refined by Huang et al. \cite{huang2008question} followed by Silva et al. \cite{silva2011symbolic}.
+
+In the second stage, we extract the hypernyms of the head word using WordNet. We map the Penn Treebank POS Tags to WordNet tags to decide which part of speech senses should be considered. Then following Huang's et al. \cite{huang2008question} algorithm for head word sense disambiguation, we calculate terms overlap between the definition of each sense and the definition of context words (each word in the question excluding the head word) with maximum depth of six. Optimal sense, the one which results in the maximum common words, is chosen to  populate the list of synonyms.
 
 \vskip7em
 
