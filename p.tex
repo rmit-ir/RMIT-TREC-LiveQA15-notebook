@@ -303,7 +303,7 @@ Analogously for each term $j$, $z_j$ is set to $1$ if term $j$ is
 included.
 
 In this problem, $c_i$ denotes the cost of selecting sentence $s_i$ (i.e.
-number of words in $s_i$), and $w_j$ denotes the weight of word $j$.
+number of characters in $s_i$), and $w_j$ denotes the weight of word $j$.
 We used a TF-IDF weighting scheme in which the term frequency ($\var{tf}$) is
 derived from the question title and body, and the inverse document-frequency
 ($\var{idf}$) is learned from a background corpus.
@@ -314,18 +314,16 @@ be less precise than in the title.
   w_j = \left[ \var{tf}_{\var{title}}(j) + \alpha ~ \var{tf}_{\var{body}}(j) \right] * \var{idf}(j)
 \end{equation}
 
-The correspondence between the sentence $i$ and the word $j$ is coded in
-the indicator variable $a_{ij}$, whose value is set to $1$ if the word $j$
-appears in sentence $i$, and $0$ otherwise.
-With the first constraint, we limit the size of the summary to $K$ words
-at most.
-With the second constraint, the word coverage is related to the
-sentence coverage, thus completing the formulation.
+The correspondence between the sentence $i$ and the word $j$ is coded in the
+indicator variable $a_{ij}$, whose value is set to $1$ if the word $j$ appears
+in sentence $i$, and $0$ otherwise.  With the first constraint, we limit the
+size of the summary to $K$ characters at most ($K$ is set to 1,000 throughout).
+With the second constraint, the word coverage is related to the sentence
+coverage, thus completing the formulation.
 
-Empirically, we fine-tuned the parameters $\lambda$ and $\alpha$ based on
-prior test runs.
-In the challenge, we set $\lambda = 0.1$ and $\alpha = 0.43$.
-We used the IBM CPLEX solver to compute the optimal allocation.
+Empirically, we fine-tuned the parameters $\lambda$ and $\alpha$ based on prior
+test runs.  In the challenge, we set $\lambda = 0.1$ and $\alpha = 0.43$.  We
+used the IBM CPLEX solver to compute the optimal allocation.
 
 \input{tbl-results.tex}
 
