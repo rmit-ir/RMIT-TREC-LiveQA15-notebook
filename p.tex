@@ -331,24 +331,26 @@ used the IBM CPLEX solver to compute the optimal allocation.
 \subsection{Headword Detection}
 \label{sec:head}
 
-Head word is supposed to be the most important term in the question in terms of
-helping to retrieve only relevant documents. For example, considering the
-question \textit{What are the sales goals daily and monthly at MAC Cosmetics?},
-the head word is `sales' and its hypernyms given the context are `gross sales',
-`income', `financial gain', and `gain sum'. The process of generating the
-hypernyms is divided into two stages stated below.
-
-To extract the head word, we generate the syntactic parse tree of the question
-using Stanford parser. Then we apply the rule-based model initially defined by
-Collins \cite{collins2003head} and lately modified/refined by Huang et al.
-\cite{huang2008question} followed by Silva et al. \cite{silva2011symbolic}.
+A {\em headword} is the key term in the question that helps
+to retrieve the most relevant documents.
+For example, consider the question: {\tt What are the sales
+goals daily and monthly at MAC Cosmetics?}.
+Here, the headword is {\tt sales}, and the hypernyms given the
+context are {\tt gross sales}, {\tt income}, {\tt financial gain}, and 
+{\tt gain sum}.
+The process of generating the hypernyms is divided into two stages.
+To extract the headword, we generate the syntactic parse tree of the
+question using the Stanford parser.
+Then, we apply the rule-based model initially defined by Collins
+\cite{collins2003head} and later refined by Huang et al.
+\cite{huang2008question} and Silva et al. \cite{silva2011symbolic}.
 
 
 
 \subsection{Query Trimming and Headword Expansion}
 \label{sec:redexp}
 
-We experimented with a feature called query trimming, which is to use
+We also experimented with a feature called query trimming, which is to use
 only the ``important'' terms in the question title to retrieve
 answers.
 The questions from Yahoo! Answers are quite verbose, and intended 
@@ -431,6 +433,13 @@ using query reduction and headword expansion.
 We hope that further postrun analysis will provide insight into
 why the approaches were not successful in our current system
 configurations.
+
+\myparagraph{Acknowledgment}
+This work was supported by the Australian Research Council's
+{\emph{Discovery Projects}} Scheme (DP140102655).
+Shane Culpepper is the recipient of an Australian Research Council
+DECRA Research Fellowship (DE140100275).
+
 
 %\bibliographystyle{IEEEtran} 
 \balance
