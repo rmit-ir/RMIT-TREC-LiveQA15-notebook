@@ -288,12 +288,21 @@ Empirically, we fine-tune parameters $\lambda$ and $\alpha$ based on the prior
 runs.  In the challenge, we set $\lambda = 0.1$ and $\alpha = 0.43$.  We use
 IBM CPLEX solver to compute the optimal alloation.
 	
-\newpage
-
 \subsection{Headword Detection}
 \label{sec:head}
 
-\vskip7em
+Head word is supposed to be the most important term in the question in terms of
+helping to retrieve only relevant documents. For example, considering the
+question \textit{What are the sales goals daily and monthly at MAC Cosmetics?},
+the head word is `sales' and its hypernyms given the context are `gross sales',
+`income', `financial gain', and `gain sum'. The process of generating the
+hypernyms is divided into two stages stated below.
+
+To extract the head word, we generate the syntactic parse tree of the question
+using Stanford parser. Then we apply the rule-based model initially defined by
+Collins \cite{collins2003head} and lately modified/refined by Huang et al.
+\cite{huang2008question} followed by Silva et al. \cite{silva2011symbolic}.
+
 
 \subsection{Query Trimming and Headword Expansion}
 \label{sec:redexp}
@@ -312,6 +321,27 @@ whenever a server starts, and in run-time we used it to trim the initial query
 down to some predefined size.  The size is set to 5 terms throughout the
 experiments where trimming is applied.
 
+	\begin{table*}[t]
+	\centering
+	\caption{
+	Effectiveness summary for all four RMIT systems when compared to the
+	average across all systems participating in the 2015 LiveQA track.
+	\label{tab:runs}}
+	\begin{tabular}{lcccccccccc}
+	\toprule
+	\multirow{2}{*}{\bf Run ID} & {\bf Avg. Score} && \multicolumn{4}{c}{\bf Success} && \multicolumn{3}{c}{\bf Precision} \\
+	& {\bf (0-3)} && {\bf @1+} & {\bf @2+} & {\bf @3+} & {\bf @4+} && {\bf @2+} & {\bf @3+} & {\bf @4+} \\
+	\midrule
+	RMIT0 &{\bf 0.663}&&$0.987$&{\bf 0.364}&{\bf 0.220}&{\bf 0.082}&&{\bf 0.369}&{\bf 0.223}&{\bf 0.083}\\
+	RMIT1 &$0.435$&&$0.992$&$0.267$&$0.130$&$0.039$&&$0.269$&$0.131$&$0.039$\\
+	RMIT2 &$0.378$&&{\bf 0.998}&$0.232$&$0.115$&$0.034$&&$0.232$&$0.115$&$0.034$\\
+	RMIT3 &$0.412$&&$0.994$&$0.251$&$0.126$&$0.038$&&$0.252$&$0.127$&$0.038$\\
+	&&&&&&&&&\\
+	All Runs  &$0.465$&&$0.925$&$0.262$&$0.146$&$0.060$&&$0.284$&$0.159$&$0.065$\\
+	\bottomrule
+	\end{tabular}
+	\end{table*}
+
 We also experimented with two ways of expanding the headword externally, by
 drawing information from resources such as \emph{word2vec} and \emph{wordnet}:
 \begin{itemize}
@@ -322,10 +352,19 @@ drawing information from resources such as \emph{word2vec} and \emph{wordnet}:
     populate a list of query terms that are most similar to the given input.  
 
   \item \method{wordnet}: In the latter method, we implemented the models
-    proposed by \cite{huang2008question, silva2011symbolic}. First we extract
-    the head word which is supposed to be the most important term in the
-    question in terms of helping to retrieve only relevant documents. Second,
-    we extract its hypernyms using WordNet. Finally, we use the context of the
+    proposed by \cite{huang2008question, silva2011symbolic}. Instead of using
+    the head word and its direct hypernyms as features for question
+    classification, we use the hypernyms only for query expansion.  Then, we
+    extract the hypernyms of the head word using WordNet.  We map the Penn
+    Treebank POS Tags to WordNet tags to decide which part of speech senses
+    should be considered. Then following Huang's et al.
+    \cite{huang2008question} algorithm for head word sense disambiguation, we
+    calculate terms overlap between the definition of each sense and the
+    definition of context words (each word in the question excluding the head
+    word) with maximum depth of six. Optimal sense, the one which results in
+    the maximum common words, is chosen to populate the list of synonyms.
+
+    We use the context of the
     question, excluding the head word, to resolve the semantic ambiguity of
     different senses and populate a list of synonyms. For example, considering
     the question \textit{What are the sales goals daily and monthly at MAC
@@ -337,38 +376,7 @@ We took the top 5 generated expansion terms and added them back into the query
 without any modification.  Note that when query trimming is applied, the query
 would first get trimmed and then rejuvenated by headword expansion.
 
-In the latter method, we implemented the models proposed by \cite{huang2008question, silva2011symbolic}. Instead of using the head word and its direct hypernyms as features for question classification, we use the hypernyms only for query expansion. Head word is supposed to be the most important term in the question in terms of helping to retrieve only relevant documents. For example, considering the question \textit{What are the sales goals daily and monthly at MAC Cosmetics?}, the head word is `sales' and its hypernyms given the context are `gross sales', `income', `financial gain', and `gain sum'. The process of generating the hypernyms is divided into two stages stated below.
-
-To extract the head word, we generate the syntactic parse tree of the question using Stanford parser. Then we apply the rule-based model initially defined by Collins \cite{collins2003head} and lately modified/refined by Huang et al. \cite{huang2008question} followed by Silva et al. \cite{silva2011symbolic}.
-
-In the second stage, we extract the hypernyms of the head word using WordNet. We map the Penn Treebank POS Tags to WordNet tags to decide which part of speech senses should be considered. Then following Huang's et al. \cite{huang2008question} algorithm for head word sense disambiguation, we calculate terms overlap between the definition of each sense and the definition of context words (each word in the question excluding the head word) with maximum depth of six. Optimal sense, the one which results in the maximum common words, is chosen to  populate the list of synonyms.
-
-\vskip7em
-
-\subsection{Results}
-
-\begin{table*}[t]
-\centering
-\caption{
-Effectiveness summary for all four RMIT systems when compared to the
-average across all systems participating in the 2015 LiveQA track.
-\label{tab:runs}}
-\begin{tabular}{lcccccccccc}
-\toprule
-\multirow{2}{*}{\bf Run ID} & {\bf Avg. Score} && \multicolumn{4}{c}{\bf Success} && \multicolumn{3}{c}{\bf Precision} \\
-& {\bf (0-3)} && {\bf @1+} & {\bf @2+} & {\bf @3+} & {\bf @4+} && {\bf @2+} & {\bf @3+} & {\bf @4+} \\
-\midrule
-RMIT0 &{\bf 0.663}&&$0.987$&{\bf 0.364}&{\bf 0.220}&{\bf 0.082}&&{\bf 0.369}&{\bf 0.223}&{\bf 0.083}\\
-RMIT1 &$0.435$&&$0.992$&$0.267$&$0.130$&$0.039$&&$0.269$&$0.131$&$0.039$\\
-RMIT2 &$0.378$&&{\bf 0.998}&$0.232$&$0.115$&$0.034$&&$0.232$&$0.115$&$0.034$\\
-RMIT3 &$0.412$&&$0.994$&$0.251$&$0.126$&$0.038$&&$0.252$&$0.127$&$0.038$\\
-&&&&&&&&&\\
-All Runs  &$0.465$&&$0.925$&$0.262$&$0.146$&$0.060$&&$0.284$&$0.159$&$0.065$\\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-\subsection{Results}
+\section{Results}
 
 The LiveQA challenge result is given in Table~\ref{tab:runs}, where our
 submitted runs and the average result across all runs are included.  Our base
