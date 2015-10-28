@@ -420,6 +420,14 @@ level.
 This is surprising, since adding more sentences increases the
 likelihood that non-relevant information would appear in the summary.
 
+Our result on query trimming and headword expansion also shows no improvement.
+Therefore, this combined strategy is not effective when top-sentence precision
+is of concern.  Among the two expansion methods, \method{word2vec} (RMIT-2)
+appears to do more harm than \method{wordnet} (RMIT-3).  We speculated that
+headword expansion using \method{word2vec} is not practically useful, as
+\method{word2vec} can be too aggresive sometimes, generating terms that are not
+synonyms to the headword and thus wildly biasing the original intent.
+
 \section{Conclusion}
 
 We have explored four different system configurations for the TREC
