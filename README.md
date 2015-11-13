@@ -111,24 +111,33 @@ summary process was returned.
     <td><b>Number of Words</b></td>
     <td><b>Description</b></td>
   </tr>
+  <tr>
+    <td>AQUAINT</td>
+    <td>1,034K</td>
+    <td>506M</td>
+    <td>Newswire, 1999&mdash;2000</td>
+  </tr>
+  <tr>
+    <td>AQUAINT2</td>
+    <td>907K</td>
+    <td>410M</td>
+    <td>Newswire, Oct 2004&mdash;Mar 2006</td>
+  </tr>
+  <tr>
+    <td>Wikipedia-EN</td>
+    <td>4,847K</td>
+    <td>1,775M</td>
+    <td>Online knowledge base</td>
+  </tr>
+  <tr>
+    <td>Yahoo! Answers CQA v1.0</td>
+    <td>31,972K</td>
+    <td>1,462M</td>
+    <td>Question answers converted to documents from the Yahoo! Answers website.</td>
+  </tr>
 </table>
 
-    \begin{table*}[!t]
-    \centering
-    \caption{Summary of collections indexed to answer questions.\label{tbl:col}}
-    \begin{tabular}{p{35mm}ccp{50mm}}
-    \toprule
-    {\bf Collection} & {\bf Number of Documents} & {\bf Number of Words} & {\bf Description} \\
-    \midrule
-    AQUAINT & $\D1{,}034$K & $\C506$M & Newswire, 1999 - 2000 \\
-    AQUAINT2 & $\D\C907$K & $\C410$M & Newswire, Oct 2004 - Mar 2006 \\
-    Wikipedia-EN & $\D4{,}847$K & $1{,}775$M & Online knowledge base \\
-    Yahoo! Answers CQA v1.0 & $31{,}972$K & $1{,}462$M & Question answers converted to documents from the Yahoo! Answers website.
-    \\
-    \bottomrule
-    \end{tabular}
-    \end{table*}
-
+Table 1.  Summary of collections indexed to answer questions.
 
 ### Collection ###
 
@@ -170,8 +179,8 @@ For BM25, our parameter configuration was $k_1=0.9$ and $b=0.4$.<sup>[8][]</sup>
 
 ### Summarization ###
 
-For summarization, we used the model proposed by Takamura and Okumura
-\cite{takamura2009text} to generate extractive summaries from the top-ranked
+For summarization, we used the model proposed by [Takamura and Okumura](#takamura2009text)
+to generate extractive summaries from the top-ranked
 passages.  In this model, summarization is characterized as a two-way
 optimization problem, in which coverage over important words is maximized, and
 redundancies are minimized simultaneously.  The mathematical formulation is
@@ -232,8 +241,8 @@ goals daily and monthly at MAC Cosmetics?*.  Here, the headword is *sales*.
 The process of generating the hypernyms is divided into two stages.  To extract
 the headword, we generate the syntactic parse tree of the question using the
 Stanford parser.  Then, we apply the rule-based model initially defined by
-Collins \cite{collins2003head} and later refined by Huang et al.
-\cite{huang2008question} and Silva et al. \cite{silva2011symbolic}.
+[Collins](#collins2003head) and later refined by [Huang et al.](#huang2008question) 
+and [Silva et al.](#silva2011symbolic).
 
 
 ### Query Trimming and Headword Expansion ###
@@ -247,7 +256,7 @@ from the question, especially if the terms selected are likely to contribute
 the most in the ranking function.
 
 First, we used the WAND implementation from Petri et
-al.~\cite{petri2013exploring,petri2014score} to extract the MaxScore $U_b$ for
+al. ([2013](#petri2013exploring); [2014](#petri2014score)) to extract the MaxScore $U_b$ for
 each term.<sup>[9][]</sup>  The MaxScore list is then loaded into memory when the
 server starts.  At query time, we used the list to order terms by impact, and
 trim the initial query down to a predefined size.  The size is set to five
@@ -262,12 +271,12 @@ externally, by drawing information from resources such as `word2vec` and
   [gensim][11] to populate a list of query terms that are most
   similar to a given input.  
 
-* `wordnet`: In this method, we implemented the models proposed by Huang et al.
-  \cite{huang2008question} and Silva et al. \cite{silva2011symbolic}.  We
-  extract the hypernyms of the head word using WordNet, and map the Penn
-  Treebank POS Tags to WordNet tags to decide which part of speech senses
-  should be considered.  Then, following the algorithm of Huang et al.
-  \cite{huang2008question} for head word-sense disambiguation, we calculate
+* `wordnet`: In this method, we implemented the models proposed by [Huang et
+  al.](#huang2008question) and [Silva et al.](#silva2011symbolic).  We extract
+  the hypernyms of the head word using WordNet, and map the Penn Treebank POS
+  Tags to WordNet tags to decide which part of speech senses should be
+  considered.  Then, following the algorithm of [Huang et
+  al.](#huang2008question) for head word-sense disambiguation, we calculate
   terms overlap between the definition of each sense and the definition of
   context words (each word in the question excluding the head word) with
   maximum depth of six. The optimal sense (the one which results in the maximum
@@ -335,16 +344,20 @@ recipient of an Australian Research Council DECRA Research Fellowship
 [10]: https://code.google.com/p/word2vec
 [11]: https://radimrehurek.com/gensim
 
-<sup><a name="footnote-3">3</a></sup> Originally referred to as Monash-System2 in the LiveQA challenge. 
+<sup><a name="footnote-3">3</a></sup> Originally referred to as Monash-System2
+in the LiveQA challenge. 
 
-<sup><a name="footnote-5">5</a></sup> We used an enwiki dump produced on May 15, 2015.
+<sup><a name="footnote-5">5</a></sup> We used an enwiki dump produced on May
+15, 2015.
 
-<sup><a name="footnote-8">8</a></sup> The values for $b$ and $k_1$ are different than the defaults reported by
-    {\citet{rwj+94-trec}}.  These parameter choices were reported for Atire and
-    Lucene in the 2015 IR-Reproducibility Challenge, see
-    http://github.com/lintool/IR-Reproducibility for further details.
+<sup><a name="footnote-8">8</a></sup> The values for $b$ and $k_1$ are
+different than the defaults reported by [Robertson et al.](#rwj+94-trec)  These
+parameter choices were reported for Atire and Lucene in the 2015
+IR-Reproducibility Challenge, see [](http://github.com/lintool/IR-Reproducibility)
+for further details.
 
-<sup><a name="footnote-9">9</a></sup> The code is available at https://www.github.com/jsc/WANDbl .
+<sup><a name="footnote-9">9</a></sup> The code is available at
+[](https://www.github.com/jsc/WANDbl) .
 
 ## References ##
 
