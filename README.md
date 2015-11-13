@@ -415,20 +415,20 @@ recipient of an Australian Research Council DECRA Research Fellowship
 [3]: #footnote-3
 [4]: #footnote-4
 
-<sup><a name="footnote-1">1</a></sup> Originally referred to as Monash-System2
+<sup><a name="footnote-1">1</a></sup>Originally referred to as Monash-System2
 in the LiveQA challenge. 
 
-<sup><a name="footnote-2">2</a></sup> We used an enwiki dump produced on May
+<sup><a name="footnote-2">2</a></sup>We used an enwiki dump produced on May
 15, 2015.
 
-<sup><a name="footnote-3">3</a></sup> The values for $b$ and $k_1$ are
+<sup><a name="footnote-3">3</a></sup>The values for $b$ and $k_1$ are
 different than the defaults reported by [Robertson et al.](#rwj+94-trec)  These
 parameter choices were reported for Atire and Lucene in the 2015
-IR-Reproducibility Challenge, see [http://github.com/lintool/IR-Reproducibility]()
+IR-Reproducibility Challenge, see <http://github.com/lintool/IR-Reproducibility>
 for further details.
 
-<sup><a name="footnote-4">4</a></sup> The code is available at
-[https://www.github.com/jsc/WANDbl]().
+<sup><a name="footnote-4">4</a></sup>The code is available at
+<https://www.github.com/jsc/WANDbl>.
 
 ## References ##
 
