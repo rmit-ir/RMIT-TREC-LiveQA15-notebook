@@ -48,7 +48,7 @@ We now describe the collection and retrieval setting used in our system.
 
 ![](TREC-live-QA.png)
 
-Figure 1. System architecture for each RMIT system.  Green shading indicates 
+Figure 1.  System architecture for each RMIT system.  Green shading indicates 
 components that are different when compared to RMIT-0.
 
 The servers are built on top of the computing resources we allocated from
@@ -230,8 +230,6 @@ Empirically, we fine-tuned the parameters $\lambda$ and $\alpha$ based on prior
 test runs.  In the challenge, we set $\lambda = 0.1$ and $\alpha = 0.43$.  We
 used the IBM CPLEX solver to compute the optimal allocation.
 
-    \input{tbl-results.tex}_
-
 
 ### Headword Detection ###
 
@@ -295,6 +293,77 @@ the query would first get trimmed down to 5 terms, and then expanded using the
 headword to at most 10 terms totally.
 
 ## Results ##
+
+    \multirow{2}{*}{\bf Run ID} & {\bf Avg. Score} && \multicolumn{4}{c}{\bf Success} && \multicolumn{3}{c}{\bf Precision} \\
+    & {\bf (0-3)} && {\bf @1+} & {\bf @2+} & {\bf @3+} & {\bf @4+} && {\bf @2+} & {\bf @3+} & {\bf @4+} \\
+    \midrule
+    RMIT0 &{\bf 0.663}&&$0.987$&{\bf 0.364}&{\bf 0.220}&{\bf 0.082}&&{\bf 0.369}&{\bf 0.223}&{\bf 0.083}\\
+    RMIT1 &$0.435$&&$0.992$&$0.267$&$0.130$&$0.039$&&$0.269$&$0.131$&$0.039$\\
+    RMIT2 &$0.378$&&{\bf 0.998}&$0.232$&$0.115$&$0.034$&&$0.232$&$0.115$&$0.034$\\
+    RMIT3 &$0.412$&&$0.994$&$0.251$&$0.126$&$0.038$&&$0.252$&$0.127$&$0.038$\\
+    &&&&&&&&&\\
+    All Runs  &$0.465$&&$0.925$&$0.262$&$0.146$&$0.060$&&$0.284$&$0.159$&$0.065$\\
+
+<table>
+  <tr>
+    <td><b>Run ID</b></td>
+    <td><b>Avg. Score (0-3)</b></td>
+    <td><b>S@1+</b></td>
+    <td><b>S@2+</b></td>
+    <td><b>S@3+</b></td>
+    <td><b>S@4+</b></td>
+    <td><b>P@2+</b></td>
+    <td><b>P@3+</b></td>
+    <td><b>P@4+</b></td>
+  </tr>
+  <tr>
+    <td>RMIT0</td>
+    <td><b>0.663</b></td>
+    <td>0.987</td>
+    <td><b>0.364</b></td>
+    <td><b>0.220</b></td>
+    <td><b>0.082</b></td>
+    <td><b>0.369</b></td>
+    <td><b>0.223</b></td>
+    <td><b>0.083</b></td>
+  </tr>
+  <tr>
+    <td>RMIT2</td>
+    <td>0.378</td>
+    <td><b>0.998</b></td>
+    <td>0.232</td>
+    <td>0.115</td>
+    <td>0.034</td>
+    <td>0.232</td>
+    <td>0.115</td>
+    <td>0.034</td>
+  </tr>
+  <tr>
+    <td>RMIT3</td>
+    <td>0.412</td>
+    <td>0.994</td>
+    <td>0.251</td>
+    <td>0.126</td>
+    <td>0.038</td>
+    <td>0.252</td>
+    <td>0.127</td>
+    <td>0.038</td>
+  </tr>
+  <tr>
+    <td>All Runs</td>
+    <td>0.465</td>
+    <td>0.925</td>
+    <td>0.262</td>
+    <td>0.146</td>
+    <td>0.060</td>
+    <td>0.284</td>
+    <td>0.159</td>
+    <td>0.065</td>
+  </tr>
+</table>
+
+Table 2.  Effectiveness summary for all four RMIT systems when compared to the
+average across all systems participating in the 2015 LiveQA track.
 
 The LiveQA challenge results are given in Table 2, where our
 submitted runs and the average result across all runs are shown.  Our base run
