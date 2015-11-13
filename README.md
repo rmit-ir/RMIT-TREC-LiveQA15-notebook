@@ -9,12 +9,12 @@ Ahmed Mourad, Kevin Ong, Falk Scholer, Evi Yulanti
 RMIT University
 School of CS&IT
 
-*Abstract*-- This paper describes the four systems RMIT fielded for the TREC
+*Abstract*&mdash;This paper describes the four systems RMIT fielded for the TREC
 2015 LiveQA task and the associated experiments.  The challenge results show
 that the base run RMIT-0 has achieved an above-average performance, but other
 attempted improvements have all resulted in decreased retrieval effectiveness.
 
-*Keywords*-- TREC LiveQA 2015; RMIT; passage retrieval; summarization; query
+*Keywords*&mdash;TREC LiveQA 2015; RMIT; passage retrieval; summarization; query
 trimming; headword expansion
 
 ## Overview ##
@@ -30,7 +30,7 @@ scale.  In our experiments, we considered the following research questions:
 <b>RQ 1</b>: *Will shorter or longer summaries result in better answers?*
 
 <b>RQ 2</b>: *Should all of the terms in a question be used, or should only a 
-subset of ``important'' terms be used?*
+subset of "important" terms be used?*
 
 <b>RQ 3</b>: *Can headword expansion using external resources improve the
 quality of answers?*
@@ -44,30 +44,24 @@ best results.
 
 We now describe the collection and retrieval setting used in our system. 
 
-    \begin{figure*}
-    \centering
-    \includegraphics[width=0.90\textwidth]{TREC-live-QA.png}
-    \label{fig:arch}
-    \caption{System architecture for each RMIT system.
-    Green shading indicates components that are different when compared
-    to RMIT-0.}
-    \end{figure*}
-
 ### Server architecture ###
 
+![](TREC-live-QA.png)
+
+Figure 1. System architecture for each RMIT system.  Green shading indicates 
+components that are different when compared to RMIT-0.
+
 The servers are built on top of the computing resources we allocated from
-NecTAR,<sup>[1][]</sup> the Australian National Research cloud computing
+[NecTAR][1], the Australian National Research cloud computing
 network.  Throughout the challenge, we use only one instance to host all of the
 services.
 
-[1]: https://www.nectar.org.au
-
 Question responses were dependent on the server ID when the questions were
-served (see Figure~\ref{fig:arch}).  In the most basic form, the server
+served (see Figure 1).  In the most basic form, the server
 converted the questions into a bag-of-words query, and ran these against the
 indexes.  The three most relevant passages retrieved are then submitted to our
 summarizer component, which outputs a predefined number of sentences ranked by
-relevance within the summarizer (see Section \ref{sec:sum}).
+relevance within the summarizer (see [Summarization](#summarization)).
 
 In our final iteration, we wanted to see if a subset of "important" terms
 derived from a headword expansion would improve performance.  In this
@@ -76,6 +70,9 @@ trimmed.  Query expansion of the headwords was carried out using `word2vec`.
 The reduced query with `word2vec` headword expansion is passed to the query
 processor.  The retrieved documents were then summarized by the summarizer, and
 the first sentence is then returned as the response.
+
+[1]: https://www.nectar.org.au
+
 
 The various services were connected using a resource allocator written in the
 Go Programming Language.  It included graceful handling of timeouts, and
