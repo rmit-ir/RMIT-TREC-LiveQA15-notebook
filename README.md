@@ -3,10 +3,10 @@ RMIT at the TREC 2015 LiveQA Track
 
 (Authors listed in lexicographical order of the surnames)
 
-Ruey-Cheng Chen, J. Shane Culpepper, Tadele Tadela Damessie, Timothy Jones,
+Ruey-Cheng Chen, J. Shane Culpepper, Tadele Tadela Damessie, Timothy Jones, <br/>
 Ahmed Mourad, Kevin Ong, Falk Scholer, Evi Yulanti
 
-RMIT University
+RMIT University <br/>
 School of CS&IT
 
 *Abstract*&mdash;This paper describes the four systems RMIT fielded for the TREC
@@ -52,7 +52,7 @@ Figure 1.  System architecture for each RMIT system.  Green shading indicates
 components that are different when compared to RMIT-0.
 
 The servers are built on top of the computing resources we allocated from
-[NecTAR][1], the Australian National Research cloud computing
+[NecTAR][a], the Australian National Research cloud computing
 network.  Throughout the challenge, we use only one instance to host all of the
 services.
 
@@ -74,12 +74,12 @@ the first sentence is then returned as the response.
 The various services were connected using a resource allocator written in the
 Go Programming Language.  It included graceful handling of timeouts, and
 guaranteed responses within the 60 second window.  For the curious reader, [our
-code][2] is available under a BSD license.  Please cite this paper
+code][b] is available under a BSD license.  Please cite this paper
 if you use the code for anything.
 
 ### Run Descriptions ###
 
-<b>RMIT-0 <sup>[3][]</sup> (automatic): </b> Indri bag-of-words passage retrieval 
+<b>RMIT-0 <sup>[1][]</sup> (automatic): </b> Indri bag-of-words passage retrieval 
 using all of the terms in the question title, and top three passages summarized 
 by the method described in [Summarization](#summarization).
 
@@ -144,8 +144,8 @@ Table 1.  Summary of collections indexed to answer questions.
 Table 1 summarizes the collections we used in the task.  We
 indexed AQUAINT and AQUAINT-2 as TREC Text documents.  To prepare the data set
 for English Wikipedia, we used the open-source tool
-[wp-download][4], to fetch a dump,<sup>[5][]</sup> extracted all of
-the XML content using [wikiextractor][6], and indexed every
+[wp-download][c], to fetch a dump,<sup>[2][]</sup> extracted all of
+the XML content using [wikiextractor][d], and indexed every
 Wikipedia page as a document.  To index the Yahoo! Answers CQA data, we
 processed the collection as follows: rather than just indexing the best
 answers, we extracted and indexed only the answers to previous questions and
@@ -155,7 +155,7 @@ stored them as documents.  We did not make use of the subject and content tags
 
 ### Indexing ###
 
-We used [Indri][7] 5.9 as our retrieval engine with Krovetz stemming and the default
+We used [Indri][e] 5.9 as our retrieval engine with Krovetz stemming and the default
 InQuery stoplist.  Once the collection described in the
 previous section was indexed, we ended up with a single 39GB index that
 contained 38.7 million documents and 12.2 million unique terms.
@@ -175,7 +175,7 @@ retrieve and parse the top three passages from document texts.
 The result was then sent to the summarizer.
 For performance reasons, and the length of some of the queries, we
 used a bag-of-words query, and BM25 ranking.
-For BM25, our parameter configuration was $k_1=0.9$ and $b=0.4$.<sup>[8][]</sup> 
+For BM25, our parameter configuration was $k_1=0.9$ and $b=0.4$.<sup>[3][]</sup> 
 
 ### Summarization ###
 
@@ -255,7 +255,7 @@ the most in the ranking function.
 
 First, we used the WAND implementation from Petri et
 al. ([2013](#petri2013exploring); [2014](#petri2014score)) to extract the MaxScore $U_b$ for
-each term.<sup>[9][]</sup>  The MaxScore list is then loaded into memory when the
+each term.<sup>[4][]</sup>  The MaxScore list is then loaded into memory when the
 server starts.  At query time, we used the list to order terms by impact, and
 trim the initial query down to a predefined size.  The size is set to five
 terms throughout the experiments where trimming is applied.
@@ -265,8 +265,8 @@ externally, by drawing information from resources such as `word2vec` and
 `wordnet`:
 
 * `word2vec`: In this method, we took a pre-trained word embedding model
-  distributed with [word2vec][10] and used
-  [gensim][11] to populate a list of query terms that are most
+  distributed with [word2vec][f] and used
+  [gensim][g] to populate a list of query terms that are most
   similar to a given input.  
 
 * `wordnet`: In this method, we implemented the models proposed by [Huang et
@@ -293,15 +293,6 @@ the query would first get trimmed down to 5 terms, and then expanded using the
 headword to at most 10 terms totally.
 
 ## Results ##
-
-    \multirow{2}{*}{\bf Run ID} & {\bf Avg. Score} && \multicolumn{4}{c}{\bf Success} && \multicolumn{3}{c}{\bf Precision} \\
-    & {\bf (0-3)} && {\bf @1+} & {\bf @2+} & {\bf @3+} & {\bf @4+} && {\bf @2+} & {\bf @3+} & {\bf @4+} \\
-    \midrule
-    RMIT0 &{\bf 0.663}&&$0.987$&{\bf 0.364}&{\bf 0.220}&{\bf 0.082}&&{\bf 0.369}&{\bf 0.223}&{\bf 0.083}\\
-    RMIT2 &$0.378$&&{\bf 0.998}&$0.232$&$0.115$&$0.034$&&$0.232$&$0.115$&$0.034$\\
-    RMIT3 &$0.412$&&$0.994$&$0.251$&$0.126$&$0.038$&&$0.252$&$0.127$&$0.038$\\
-    &&&&&&&&&\\
-    All Runs  &$0.465$&&$0.925$&$0.262$&$0.146$&$0.060$&&$0.284$&$0.159$&$0.065$\\
 
 <table>
   <tr>
@@ -411,31 +402,32 @@ recipient of an Australian Research Council DECRA Research Fellowship
 
 ## Footnotes ##
 
-[1]: https://www.nectar.org.au
-[2]: https://github.com/TimothyJones/trec-liveqa-server
-[3]: #footnote-3
-[4]: https://github.com/babilen/wp-download
-[5]: #footnote-5
-[6]: https://github.com/attardi/wikiextractor
-[7]: http://www.lemurproject.org/indri.php
-[8]: #footnote-8
-[9]: #footnote-9
-[10]: https://code.google.com/p/word2vec
-[11]: https://radimrehurek.com/gensim
+[a]: https://www.nectar.org.au
+[b]: https://github.com/TimothyJones/trec-liveqa-server
+[c]: https://github.com/babilen/wp-download
+[d]: https://github.com/attardi/wikiextractor
+[e]: http://www.lemurproject.org/indri.php
+[f]: https://code.google.com/p/word2vec
+[g]: https://radimrehurek.com/gensim
 
-<sup><a name="footnote-3">3</a></sup> Originally referred to as Monash-System2
+[1]: #footnote-1
+[2]: #footnote-2
+[3]: #footnote-3
+[4]: #footnote-4
+
+<sup><a name="footnote-1">1</a></sup> Originally referred to as Monash-System2
 in the LiveQA challenge. 
 
-<sup><a name="footnote-5">5</a></sup> We used an enwiki dump produced on May
+<sup><a name="footnote-2">2</a></sup> We used an enwiki dump produced on May
 15, 2015.
 
-<sup><a name="footnote-8">8</a></sup> The values for $b$ and $k_1$ are
+<sup><a name="footnote-3">3</a></sup> The values for $b$ and $k_1$ are
 different than the defaults reported by [Robertson et al.](#rwj+94-trec)  These
 parameter choices were reported for Atire and Lucene in the 2015
 IR-Reproducibility Challenge, see [](http://github.com/lintool/IR-Reproducibility)
 for further details.
 
-<sup><a name="footnote-9">9</a></sup> The code is available at
+<sup><a name="footnote-4">4</a></sup> The code is available at
 [](https://www.github.com/jsc/WANDbl) .
 
 ## References ##
