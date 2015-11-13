@@ -345,3 +345,36 @@ recipient of an Australian Research Council DECRA Research Fellowship
     http://github.com/lintool/IR-Reproducibility for further details.
 
 <sup><a name="footnote-9">9</a></sup> The code is available at https://www.github.com/jsc/WANDbl .
+
+## References ##
+
+<a name="collins2003head">[1]</a> Michael Collins.  Head-driven statistical
+models for natural language parsing.  *Computational linguistics*,
+29(4):589&mdash;637, 2003.
+
+<a name="huang2008question">[2]</a> Zhiheng Huang, Marcus Thint, and Zengchang
+Qin.  Question classification using head words and their hypernyms.  In
+*Proceedings of the Conference on Empirical Methods in Natural Language
+Processing*, pages 927&mdash;936. Association for Computational Linguistics,
+2008.
+
+<a name="petri2013exploring">[3]</a> Matthias Petri, J~Shane Culpepper, and
+Alistair Moffat.  Exploring the magic of wand.  In *Proceedings of the 18th
+Australasian Document Computing Symposium*, pages 58&mdash;65. ACM, 2013.
+
+<a name="petri2014score">[4]</a> Matthias Petri, Alistair Moffat, and J~Shane
+Culpepper.  Score-safe term-dependency processing with hybrid indexes.  In
+*Proceedings of the 37th international ACM SIGIR conference on Research &
+development in information retrieval*, pages 899&mdash;902. ACM, 2014.
+
+<a name="rwj+94-trec">[5]</a> S. E. Robertson, S. Walker, S. Jones, M.
+Hancock-Beaulieu, and M. Gatford.  Okapi at TREC-3.  In *Proc. TREC-3*, 1994.
+
+<a name="silva2011symbolic">[6]</a> Joao Silva, Lu&iacute;sa Coheur, Ana~Cristina
+Mendes, and Andreas Wichert.  From symbolic to sub-symbolic information in
+question classification.  *Artificial Intelligence Review*,
+35(2):137&mdash;154, 2011.
+
+<a name="takamura2009text">[7]</a> Hiroya Takamura and Manabu Okumura.  Text
+summarization model based on maximum coverage problem and its variant.  In
+*Proc. of EACL*, pages 781&mdash;789, 2009.
