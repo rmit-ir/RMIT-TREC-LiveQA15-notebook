@@ -175,7 +175,7 @@ retrieve and parse the top three passages from document texts.
 The result was then sent to the summarizer.
 For performance reasons, and the length of some of the queries, we
 used a bag-of-words query, and BM25 ranking.
-For BM25, our parameter configuration was $k_1=0.9$ and $b=0.4$.<sup>[3][]</sup> 
+For BM25, our parameter configuration was <i>k<sub>1</sub></i> = 0.9 and <i>b</i> = 0.4.<sup>[3][]</sup> 
 
 ### Summarization ###
 
@@ -186,48 +186,37 @@ optimization problem, in which coverage over important words is maximized, and
 redundancies are minimized simultaneously.  The mathematical formulation is
 given as follows:
 
-    \begin{equation}
-    \begin{split}
-      \textrm{maximize} \qquad & (1-\lambda) \sum_{j} w_j z_j + \lambda \sum_{i}\sum_{j} x_i w_j a_{ij} \\
-      \textrm{subject to} \qquad 
-	   & x_i \in \{0,1\} \textrm{for all $i$}; \\ 
-	   & z_j \in \{0,1\} \textrm{for all $j$}; \\
-	   & \sum_{i} c_ix_i \le K; \\
-	   & \sum_{i}^{} a_{ij}x_i \ge z_j \textrm{for all $j$} 
-    \end{split}
-    \end{equation}
+![](http://www.sciweavers.org/tex2img.php?eq=%20%20%20%20%5Cbegin%7Bsplit%7D%0A%20%20%20%20%20%20%5Ctextrm%7Bmaximize%7D%20%5Cqquad%20%26%20%281-%5Clambda%29%20%5Csum_%7Bj%7D%20w_j%20z_j%20%2B%20%5Clambda%20%5Csum_%7Bi%7D%5Csum_%7Bj%7D%20x_i%20w_j%20a_%7Bij%7D%20%5C%5C%0A%20%20%20%20%20%20%5Ctextrm%7Bsubject%20to%7D%20%5Cqquad%20%0A%09%20%20%20%26%20x_i%20%5Cin%20%5C%7B0%2C1%5C%7D%20%5Ctextrm%7Bfor%20all%20%24i%24%7D%3B%20%5C%5C%20%0A%09%20%20%20%26%20z_j%20%5Cin%20%5C%7B0%2C1%5C%7D%20%5Ctextrm%7Bfor%20all%20%24j%24%7D%3B%20%5C%5C%0A%09%20%20%20%26%20%5Csum_%7Bi%7D%20c_ix_i%20%5Cle%20K%3B%20%5C%5C%0A%09%20%20%20%26%20%5Csum_%7Bi%7D%5E%7B%7D%20a_%7Bij%7Dx_i%20%5Cge%20z_j%20%5Ctextrm%7Bfor%20all%20%24j%24%7D%20%0A%20%20%20%20%5Cend%7Bsplit%7D%0A&bc=Transparent&fc=Black&im=png&fs=12&ff=cmbright&edit=0)
 
 To produce an extractive summary, one basically makes a choice over the set of
 sentences and decides what to include.  By doing so, one also makes an implicit
 choice over words.  This choice is modeled in the optimization problem as two
-sets of variables $x_i$ and $z_j$, the former indicating the binary decision on
-keeping sentence $i$, and the latter on keeping word $j$ in the summary.  In
-other words, for each sentence $i$, $x_i$ is set to $1$ if sentence $i$ is to
-be included in the summary, or $0$ otherwise.  Analogously for each term $j$,
-$z_j$ is set to $1$ if term $j$ is included.
+sets of variables <i>x<sub>i</sub></i> and <i>z<sub>j</sub></i>, the former indicating the binary decision on
+keeping sentence <i>i</i>, and the latter on keeping word <i>j</i> in the summary.  In
+other words, for each sentence <i>i</i>, <i>x<sub>i</sub></i> is set to 1 if sentence <i>i</i> is to
+be included in the summary, or 0 otherwise.  Analogously for each term <i>j</i>,
+<i>z<sub>j</sub></i> is set to 1 if term <i>j</i> is included.
 
-In this problem, $c_i$ denotes the cost of selecting sentence $s_i$ (i.e.
-number of characters in $s_i$), and $w_j$ denotes the weight of word $j$.  We
-used a TF-IDF weighting scheme in which the term frequency ($\var{tf}$) is
+In this problem, <i>c<sub>i</sub></i> denotes the cost of selecting sentence <i>s<sub>i</sub></i> (i.e.
+number of characters in <i>s<sub>i</sub></i>), and <i>w<sub>j</sub></i> denotes the weight of word <i>j</i>.  We
+used a TF-IDF weighting scheme in which the term frequency (<i>tf</i>) is
 derived from the question title and body, and the inverse document-frequency
-($\var{idf}$) is learned from a background corpus.  The term frequency
-collected from the question body is further penalized with a factor $\alpha <
-1$ as the information given in the question body can be less precise than in
+(<i>idf</i>) is learned from a background corpus.  The term frequency
+collected from the question body is further penalized with a factor <i>&alpha;</i> <
+1 as the information given in the question body can be less precise than in
 the title.
 
-    \begin{equation}
-      w_j = \left[ \var{tf}_{\var{title}}(j) + \alpha ~ \var{tf}_{\var{body}}(j) \right] * \var{idf}(j)
-    \end{equation}
+![](http://www.sciweavers.org/tex2img.php?eq=w_j%20%3D%20%5Cleft%5B%20%5Cvar%7Btf%7D_%7B%5Cvar%7Btitle%7D%7D%28j%29%20%2B%20%5Calpha%20%7E%20%5Cvar%7Btf%7D_%7B%5Cvar%7Bbody%7D%7D%28j%29%20%5Cright%5D%20%2A%20%5Cvar%7Bidf%7D%28j%29&bc=Transparent&fc=Black&im=png&fs=12&ff=cmbright&edit=0)
 
-The correspondence between the sentence $i$ and the word $j$ is coded in the
-indicator variable $a_{ij}$, whose value is set to $1$ if the word $j$ appears
-in sentence $i$, and $0$ otherwise.  With the first constraint, we limit the
-size of the summary to $K$ characters at most ($K$ is set to 1,000 throughout).
+The correspondence between the sentence <i>i</i> and the word <i>j</i> is coded in the
+indicator variable <i>a<sub>ij</sub></i>, whose value is set to 1 if the word <i>j</i> appears
+in sentence <i>i</i>, and 0 otherwise.  With the first constraint, we limit the
+size of the summary to <i>K</i> characters at most (<i>K</i> is set to 1,000 throughout).
 With the second constraint, the word coverage is related to the sentence
 coverage, thus completing the formulation.
 
-Empirically, we fine-tuned the parameters $\lambda$ and $\alpha$ based on prior
-test runs.  In the challenge, we set $\lambda = 0.1$ and $\alpha = 0.43$.  We
+Empirically, we fine-tuned the parameters <i>&lambda;</i> and <i>&alpha;</i> based on prior
+test runs.  In the challenge, we set <i>&lambda;</i> = 0.1 and <i>&alpha;</i> = 0.43.  We
 used the IBM CPLEX solver to compute the optimal allocation.
 
 
@@ -254,7 +243,7 @@ from the question, especially if the terms selected are likely to contribute
 the most in the ranking function.
 
 First, we used the WAND implementation from Petri et
-al. ([2013](#petri2013exploring); [2014](#petri2014score)) to extract the MaxScore $U_b$ for
+al. ([2013](#petri2013exploring); [2014](#petri2014score)) to extract the MaxScore <i>U<sub>b</sub></i> for
 each term.<sup>[4][]</sup>  The MaxScore list is then loaded into memory when the
 server starts.  At query time, we used the list to order terms by impact, and
 trim the initial query down to a predefined size.  The size is set to five
@@ -421,7 +410,7 @@ in the LiveQA challenge.
 <sup><a name="footnote-2">2</a></sup>We used an enwiki dump produced on May
 15, 2015.
 
-<sup><a name="footnote-3">3</a></sup>The values for $b$ and $k_1$ are
+<sup><a name="footnote-3">3</a></sup>The values for <i>b</i> and <i>k<sub>1</sub></i> are
 different than the defaults reported by [Robertson et al.](#rwj+94-trec)  These
 parameter choices were reported for Atire and Lucene in the 2015
 IR-Reproducibility Challenge, see <http://github.com/lintool/IR-Reproducibility>
