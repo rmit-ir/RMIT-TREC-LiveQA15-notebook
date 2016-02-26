@@ -4,7 +4,7 @@ RMIT at the TREC 2015 LiveQA Track
 (Authors listed in lexicographical order of the surnames)
 
 Ruey-Cheng Chen, J. Shane Culpepper, Tadele Tadela Damessie, Timothy Jones, <br/>
-Ahmed Mourad, Kevin Ong, Falk Scholer, Evi Yulanti
+Ahmed Mourad, Kevin Ong, Falk Scholer, Evi Yulianti
 
 RMIT University <br/>
 School of CS&IT
