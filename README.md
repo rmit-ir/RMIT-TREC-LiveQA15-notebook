@@ -384,10 +384,12 @@ query reduction and headword expansion.  We hope that further post-run analysis
 will provide insight into why the approaches were not successful in our current
 system configurations.
 
-<b>Acknowledgment</b>.  This work was supported by the Australian Research
-Council's *Discovery Projects* Scheme (DP140102655).  Shane Culpepper is the
-recipient of an Australian Research Council DECRA Research Fellowship
-(DE140100275).
+<b>Acknowledgment</b>.  This work was supported in part by the Australian
+Research Council's *Discovery Projects* Scheme (DP140102655), and in part by
+NPRP grant# NPRP 6-1377-1-257 from the Qatar National Research Fund (a member
+of Qatar Foundation).  Shane Culpepper is the recipient of an Australian
+Research Council DECRA Research Fellowship (DE140100275).  The statements made
+herein are solely the responsibility of the authors.
 
 ## Footnotes ##
 
